@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>필요성인가, 실현가능성인가 — 호남 반도체 클러스터 통계 검증 (수정본)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f0ea;
+  --panel:#ffffff;
+  --ink:#211f1c;
+  --ink-soft:#5b584f;
+  --ink-faint:#8c887c;
+  --line:#d8d4c8;
+  --needs:#2f5d82;
+  --needs-bg:#e3ebf1;
+  --feas:#8c2f3c;
+  --feas-bg:#f3e4e6;
+  --amber:#a56a17;
+  --amber-bg:#f2e6d1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--ink);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
+.slide{
+  position:absolute;width:min(1180px,94vw);height:min(680px,86vh);
+  background:var(--panel);border:1px solid var(--line);border-radius:4px;
+  padding:52px 68px;display:none;flex-direction:column;
+  opacity:0;transform:translateY(14px);transition:opacity .35s ease, transform .35s ease;
+}
+.slide.active{display:flex;opacity:1;transform:translateY(0);}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;letter-spacing:.04em;padding:5px 12px;border-radius:2px;width:fit-content;margin-bottom:20px;}
+.eyebrow.needs{background:var(--needs-bg);color:var(--needs);}
+.eyebrow.feas{background:var(--feas-bg);color:var(--feas);}
+.eyebrow.gray{background:#ece9e1;color:var(--ink-soft);}
+h1{font-family:'Noto Serif KR',serif;font-weight:700;font-size:40px;line-height:1.32;letter-spacing:-.01em;}
+h2{font-family:'Noto Serif KR',serif;font-weight:700;font-size:28px;line-height:1.35;letter-spacing:-.005em;}
+.sub{font-family:'Noto Serif KR',serif;font-size:18px;color:var(--ink-soft);margin-top:14px;line-height:1.6;}
+.body-copy{font-size:16.5px;line-height:1.8;color:var(--ink);margin-top:18px;}
+.body-copy b{font-weight:700;color:var(--ink);}
+.kw{font-weight:700;padding:1px 6px;border-radius:2px;}
+.kw.needs{background:var(--needs-bg);color:var(--needs);}
+.kw.feas{background:var(--feas-bg);color:var(--feas);}
+.kw.amber{background:var(--amber-bg);color:var(--amber);}
+ul.points{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:12px;}
+ul.points li{font-size:16.5px;line-height:1.6;padding-left:22px;position:relative;}
+ul.points li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--ink-faint);}
+.row{display:flex;gap:36px;flex:1;align-items:stretch;margin-top:20px;}
+.col{flex:1;display:flex;flex-direction:column;}
+.chart-wrap{position:relative;width:100%;flex:1;min-height:200px;}
+.stat-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:20px;}
+.stat-grid.two{grid-template-columns:1fr 1fr;}
+.stat-card{background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:16px 18px;}
+.stat-card .label{font-size:12.5px;color:var(--ink-soft);margin-bottom:7px;}
+.stat-card .value{font-family:'Noto Serif KR',serif;font-weight:700;font-size:25px;line-height:1.15;}
+.stat-card .value.needs{color:var(--needs);}
+.stat-card .value.feas{color:var(--feas);}
+.stat-card .value.amber{color:var(--amber);}
+.stat-card .note{font-size:12.5px;color:var(--ink-faint);margin-top:6px;line-height:1.5;}
+.footer-num{position:absolute;bottom:28px;left:68px;font-size:12px;color:var(--ink-faint);letter-spacing:.06em;}
+.footer-topic{position:absolute;bottom:28px;right:68px;font-size:12px;color:var(--ink-faint);letter-spacing:.03em;}
+.quote-slide{align-items:center;justify-content:center;text-align:center;}
+.quote-slide h2{font-size:32px;max-width:880px;line-height:1.5;}
+.quote-slide .mark{font-family:'Noto Serif KR',serif;font-size:60px;color:var(--line);line-height:1;margin-bottom:8px;}
+.title-wrap{margin-top:auto;margin-bottom:auto;}
+.hero-stat{display:flex;align-items:baseline;gap:14px;margin-top:32px;}
+.hero-stat .num{font-family:'Noto Serif KR',serif;font-weight:700;font-size:60px;color:var(--feas);}
+.hero-stat .lbl{font-size:15px;color:var(--ink-soft);max-width:280px;line-height:1.5;}
+.divider{width:100%;height:1px;background:var(--line);margin:20px 0;}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;}
+.plan-card{border:1px solid var(--line);border-radius:3px;padding:18px 20px;}
+.plan-card .num{font-family:'Noto Serif KR',serif;font-weight:700;font-size:20px;color:var(--ink-faint);margin-bottom:7px;}
+.plan-card p{font-size:15px;line-height:1.6;color:var(--ink);}
+.tag{display:inline-block;font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+.tag.verified{background:var(--needs-bg);color:var(--needs);}
+.tag.unverified{background:#ece9e1;color:var(--ink-soft);}
+.nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:10;}
+.nav button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.nav button:hover{background:var(--bg);}
+.dots{display:flex;gap:6px;flex-wrap:wrap;max-width:280px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .2s;}
+.dot.active{background:var(--ink);}
+.hint{position:fixed;top:18px;right:24px;font-size:12px;color:var(--ink-faint);z-index:10;}
+</style>
+</head>
+<body>
+
+<div class="hint">← → 로 이동 · 수정본 v2</div>
+
+<div class="deck">
+
+  <!-- 1: Title -->
+  <div class="slide active">
+    <div class="eyebrow gray">실용통계 심화탐구 · 수정본</div>
+    <div class="title-wrap">
+      <h1>필요성인가,<br>실현가능성인가</h1>
+      <p class="sub">호남 반도체 클러스터 2,000조원 — 통계로 검증하다</p>
+      <div class="hero-stat">
+        <span class="num">2,000<span style="font-size:26px;">조원</span></span>
+        <span class="lbl">2026.6.29 발표된 역대 최대 규모 인프라 투자. 그 근거로 쓰인 통계는 실제로 무엇을 증명하는가.</span>
+      </div>
+    </div>
+    <div class="footer-num">01 / 11</div>
+    <div class="footer-topic">탐구 개요</div>
+  </div>
+
+  <!-- 2: 문제 상황 -->
+  <div class="slide">
+    <div class="eyebrow gray">문제 상황</div>
+    <h2>정부는 "전력은 남는데 소비할 산업이 없다"는<br>통계를 근거로 반도체 유치를 주장했다</h2>
+    <ul class="points">
+      <li>2023년 전국 생산액 <b>5,646조원</b> 중 수도권이 48.6%, 전북은 <b>240.7조원(2.7%)</b>에 불과 — 전북 경제의 상대적 규모</li>
+      <li><b>2026.6.24</b> 국가데이터처, 전북 <span class="kw needs">지역공급사용표</span> 최초 공표 — 전기가스업 공급 <b>+12.8%</b>, 사용 <b>-3.5%</b></li>
+      <li><b>2026.6.29</b> 정부, 삼성·SK 반도체 클러스터 <b>2,000조원</b> 규모 공식 발표 (실제 부지는 광주·전남)</li>
+    </ul>
+    <div class="divider"></div>
+    <p class="body-copy" style="margin-top:0;">탐구 질문 — 전력·용수 공급 통계는 반도체 클러스터 유치의 <b>필요성</b>과 <b>실현가능성</b>을 동시에 증명하는가?</p>
+    <div class="footer-num">02 / 11</div>
+    <div class="footer-topic">문제 상황</div>
+  </div>
+
+  <!-- 3: 필요성① -->
+  <div class="slide">
+    <div class="eyebrow needs">필요성 검증 ①</div>
+    <h2>17개 시도로 비교하면, 전북은 중위권일 뿐이다</h2>
+    <div class="row">
+      <div class="col" style="flex:1.3">
+        <div class="chart-wrap"><canvas id="s3chart" role="img" aria-label="17개 시도 전기가스업 공급-사용 격차. 경기 26.8퍼센트포인트로 1위, 전북은 16.3퍼센트포인트로 10위 중위권"></canvas></div>
+      </div>
+      <div class="col" style="justify-content:center;">
+        <p class="body-copy" style="margin-top:0;">이미 삼성·SK 클러스터가 있는 <span class="kw amber">경기(26.8%p)</span>가 격차 <b>1위</b>. "격차가 크면 반도체가 필요하다"는 원 기사 논리라면, 이미 반도체가 있는 경기가 1위인 건 설명되지 않는다.</p>
+        <p class="body-copy"><span class="kw feas">전북(16.3%p)</span>은 17개 지역 중 <b>10위</b> — 전국 12개 지역에서 공통 발생한 현상이었다.</p>
+      </div>
+    </div>
+    <div class="footer-num">03 / 11</div>
+    <div class="footer-topic">필요성</div>
+  </div>
+
+  <!-- 4: 필요성② -->
+  <div class="slide">
+    <div class="eyebrow needs">필요성 검증 ②</div>
+    <h2>"전력이 남는다"는 전북이 아니라 전남의 이야기다</h2>
+    <div class="row">
+      <div class="col" style="flex:1.3">
+        <div class="chart-wrap"><canvas id="s4chart" role="img" aria-label="지역별 전력 자급률. 전북 71퍼센트 순수입, 전남 200퍼센트 순수출"></canvas></div>
+      </div>
+      <div class="col" style="justify-content:center;">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="label">전북 전력 자급률 (발전량/판매량)</div><div class="value feas">71%</div><div class="note">순수입 지역 — "생산 능력 확대"라는 전제가 실물 데이터로는 성립하지 않음</div></div>
+          <div class="stat-card"><div class="label">전남 전력 자급률</div><div class="value needs">200%</div><div class="note">순수출 지역 — 실제 클러스터 부지와 지리적으로 일치</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-num">04 / 11</div>
+    <div class="footer-topic">필요성</div>
+  </div>
+
+  <!-- 5: 필요성③ 원기사의 다른 근거 (NEW) -->
+  <div class="slide">
+    <div class="eyebrow needs">필요성 검증 ③</div>
+    <h2>원 기사가 실제로 제시한 다른 근거들</h2>
+    <p class="body-copy" style="margin-top:0;">헤드라인 수치(전기가스업 공급-사용 갭) 말고도, 기사 본문에는 세 가지 근거가 더 있다. 검증 결과는 제각각이다.</p>
+    <div class="stat-grid two" style="margin-top:22px;">
+      <div class="stat-card">
+        <div class="label">총자본형성 (2022→2023)<span class="tag verified">지지됨</span></div>
+        <div class="value needs">18.5조 → 19조원 (+2.9%)</div>
+        <div class="note">17개 지역 중 하위권, 전국평균(5.1%) 미달 — 유일하게 통계적으로 지지되는 근거</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">소비주도 구조<span class="tag unverified">미검증</span></div>
+        <div class="value amber">민간소비 +4.5% · 정부소비 +3.5%</div>
+        <div class="note">기사는 이를 "제조업 투자 부족의 방증"으로 해석하지만, 소비 증가와 반도체 필요성 사이 인과관계는 검증되지 않음</div>
+      </div>
+    </div>
+    <p class="body-copy">공급 핵심산업은 여전히 <b>기계·운송장비(10.4%)</b> 중심 — 산업 다변화 필요성 자체는 사실이나, 그것이 곧 "반도체"여야 하는 이유는 별도로 입증돼야 한다.</p>
+    <div class="footer-num">05 / 11</div>
+    <div class="footer-topic">필요성</div>
+  </div>
+
+  <!-- 6: 실현가능성① 용수 시계열 (수정) -->
+  <div class="slide">
+    <div class="eyebrow feas">실현가능성 검증 ①</div>
+    <h2>같은 권역, 같은 명목 기준인데 계속 달라졌다</h2>
+    <div class="row">
+      <div class="col" style="flex:1.3">
+        <div class="chart-wrap"><canvas id="s5chart" role="img" aria-label="용수 부족 전망 시계열. 2016년 부족 2700톤, 2022년 부족 1만2822톤, 2023년 부족 36만8000톤에서 기후변화 고려 시 57만톤, 2026년 100만톤 이상 여유로 반전"></canvas></div>
+      </div>
+      <div class="col" style="justify-content:center;">
+        <p class="body-copy" style="margin-top:0;"><span class="kw feas">2016년 2,700톤</span> → <span class="kw feas">2022년 12,822톤</span> → <span class="kw feas">2023년 368,000톤</span>(과거 최대가뭄 기준, 기후변화 고려 시 <b>57만톤</b>) → <span class="kw needs">2026년 100만톤 이상 여유</span></p>
+        <p class="body-copy">2023년 당시 환경부·수자원공사에 총 공급가능량을 문의해도 <b>명확한 수치를 받지 못했다</b>(에너지경제신문 취재).</p>
+      </div>
+    </div>
+    <div class="footer-num">06 / 11</div>
+    <div class="footer-topic">실현가능성</div>
+  </div>
+
+  <!-- 7: 실현가능성② 51만톤 중복 문제 (NEW) -->
+  <div class="slide">
+    <div class="eyebrow feas">실현가능성 검증 ②</div>
+    <h2>"신규 확보 100만톤" 중 절반은 이미 있던 물량 아닌가</h2>
+    <div class="stat-grid two" style="margin-top:26px;">
+      <div class="stat-card">
+        <div class="label">2026년 발표 106만톤 구성</div>
+        <div class="value" style="font-size:17px;line-height:1.7;">
+          기존댐 여유분 20만톤 + 농업·발전용수 전환 31만톤<br>
+          <span style="color:var(--ink-faint);font-weight:400;">→ 신규 개발 없이도 가능한 51만톤</span><br>
+          댐 증고 25만톤 + 하수처리수 재이용 30만톤<br>
+          <span style="color:var(--ink-faint);font-weight:400;">→ 신규 사업 55만톤</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="label">기사의 질문</div>
+        <div class="value feas" style="font-size:19px;line-height:1.6;">그 51만톤이 2023년에도 있었다면,<br>왜 61만톤 규모의 신규 개발계획을 세웠나?</div>
+        <div class="note">물 절약·수요관리만으로도 상당 부분 해결 가능했을 수 있다는 지적</div>
+      </div>
+    </div>
+    <div class="footer-num">07 / 11</div>
+    <div class="footer-topic">실현가능성</div>
+  </div>
+
+  <!-- 8: 실현가능성③ 댐공급능력=요구량 -->
+  <div class="slide">
+    <div class="eyebrow feas">실현가능성 검증 ③</div>
+    <h2>"여유"가 아니라 기존 공급 전체를 흡수하는 규모다</h2>
+    <div class="row">
+      <div class="col" style="flex:1.3">
+        <div class="chart-wrap"><canvas id="s6chart" role="img" aria-label="영산강 유역 댐 공급능력 64.6만톤, 반도체 클러스터 요구량 65만톤으로 거의 일치, 여수산단 부족 전망 20만톤 별도"></canvas></div>
+      </div>
+      <div class="col" style="justify-content:center;">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="label">영산강 유역 댐 전체 공급능력</div><div class="value">64.6만톤/일</div></div>
+          <div class="stat-card"><div class="label">반도체 클러스터 요구 용수량</div><div class="value feas">65만톤/일 — 거의 일치</div></div>
+        </div>
+        <p class="body-copy">여기에 여수산단 기존 부족분(20만톤/일)은 포함되지도 않았다.</p>
+      </div>
+    </div>
+    <div class="footer-num">08 / 11</div>
+    <div class="footer-topic">실현가능성</div>
+  </div>
+
+  <!-- 9: 핵심 한 문장 -->
+  <div class="slide quote-slide">
+    <div class="mark">“</div>
+    <h2>"통계로 확인된 시급성"이라는 말은, 정확히 말하면<br>필요성 근거의 상당수가 <span class="kw needs">지리적으로 잘못 짚어졌고</span><br>실현가능성 근거는 <span class="kw feas">산정 기준 자체가 검증 불가능한 상태</span>에서<br>정책이 추진되고 있다는 뜻이다.</h2>
+    <div class="footer-num">09 / 11</div>
+    <div class="footer-topic">종합 결론</div>
+  </div>
+
+  <!-- 10: 제안 -->
+  <div class="slide">
+    <div class="eyebrow gray">제안 및 실천 방안</div>
+    <h2>정책 통계는 어떻게 다뤄져야 하는가</h2>
+    <div class="plan-grid">
+      <div class="plan-card"><div class="num">01</div><p>정책 근거 통계는 <b>원자료 기준</b>으로 재검증되어야 한다. 전국 비교치와 함께 원자료를 공개하는 것을 제도화한다.</p></div>
+      <div class="plan-card"><div class="num">02</div><p>시계열 통계는 <b>산정 기준 변경 이력</b>을 의무적으로 공시해야 한다. 기준연도·모델링 방식이 바뀌면 각주로 명시한다.</p></div>
+      <div class="plan-card"><div class="num">03</div><p><b>필요성과 실현가능성 통계</b>는 정책발표 문서에서 구분 표기해야 한다. 하나만 강조되면 검증이 생략된다.</p></div>
+      <div class="plan-card"><div class="num">04</div><p>물 수급의 2/3를 차지하는 <b>농업용수 계측 체계</b>부터 정비해야 한다. 측정되지 않는 것은 검증될 수 없다.</p></div>
+    </div>
+    <div class="footer-num">10 / 11</div>
+    <div class="footer-topic">제안</div>
+  </div>
+
+  <!-- 11: 배운 점 -->
+  <div class="slide">
+    <div class="eyebrow gray">이번 탐구를 통해 알게 된 점</div>
+    <h2>강조된 숫자가 아니라 전체 맥락을 봐야 한다</h2>
+    <p class="body-copy" style="margin-top:24px;">언론이 헤드라인으로 뽑은 지표보다, 기사 안에서 한 줄로 스쳐 지나간 지표(총자본형성)가 오히려 더 견고한 근거였다.</p>
+    <p class="body-copy"><span class="kw needs">필요성</span>을 보여주는 통계와 <span class="kw feas">실현가능성</span>을 보여주는 통계는 서로 다른 질문에 답한다 — 하나가 확인됐다고 다른 하나까지 자동으로 증명되지는 않는다.</p>
+    <p class="body-copy">통계적 사고의 핵심은 숫자를 받아들이는 것이 아니라, <b>그 숫자가 어떤 질문에 답하고 있는지</b>를 되묻는 데 있다.</p>
+    <div class="footer-num">11 / 11</div>
+    <div class="footer-topic">결론</div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="prevBtn" aria-label="이전 슬라이드">‹</button>
+  <div class="dots" id="dots"></div>
+  <button id="nextBtn" aria-label="다음 슬라이드">›</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsWrap = document.getElementById('dots');
+let current = 0;
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.addEventListener('click', () => go(i));
+  dotsWrap.appendChild(d);
+});
+const dots = document.querySelectorAll('.dot');
+function go(i){
+  if(i < 0 || i >= slides.length) return;
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+}
+document.getElementById('prevBtn').addEventListener('click', () => go(current - 1));
+document.getElementById('nextBtn').addEventListener('click', () => go(current + 1));
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowRight') go(current + 1);
+  if(e.key === 'ArrowLeft') go(current - 1);
+});
+
+const gray = '#8c887c', grid = '#e5e2d8', txt = '#5b584f';
+const base = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} };
+
+const l3 = ['경기','경북','울산','세종','부산','인천','제주','경남','강원','전북','서울','전남','충남'];
+const v3 = [26.8,26.6,25.9,24.4,19.9,19.4,18.4,17.7,17.2,16.3,15.9,15.2,13.7];
+new Chart(document.getElementById('s3chart'), {
+  type:'bar',
+  data:{ labels:l3, datasets:[{ data:v3, backgroundColor:l3.map(l=>l==='전북'?'#8c2f3c':(l==='경기'?'#a56a17':'#c3c0b4')), borderRadius:3, barThickness:14 }] },
+  options:{ ...base, indexAxis:'y', scales:{ x:{grid:{color:grid},ticks:{color:gray,font:{size:11}}}, y:{grid:{display:false},ticks:{color:(c)=>l3[c.index]==='전북'?'#8c2f3c':(l3[c.index]==='경기'?'#a56a17':txt), font:{size:12}}} } }
+});
+
+const l4 = ['강원','경북','충남','전남','인천','부산','경남','울산','제주','전북'];
+const v4 = [218,216,212,200,186,172,122,94,77,71];
+const hi4 = {'전북':'#8c2f3c','전남':'#2f5d82'};
+new Chart(document.getElementById('s4chart'), {
+  type:'bar',
+  data:{ labels:l4, datasets:[{ data:v4, backgroundColor:l4.map(l=>hi4[l]||'#c3c0b4'), borderRadius:3, barThickness:16 }] },
+  options:{ ...base, indexAxis:'y', scales:{ x:{min:0,max:230,grid:{color:grid},ticks:{color:gray,font:{size:11}}}, y:{grid:{display:false},ticks:{color:(c)=>hi4[l4[c.index]]||txt, font:{size:12}}} } }
+});
+
+new Chart(document.getElementById('s5chart'), {
+  type:'bar',
+  data:{ labels:['2016','2022','2023\n(과거 가뭄)','2023\n(기후변화 고려)','2026'], datasets:[{ data:[0.27,1.28,36.8,57,-100], backgroundColor:[0.27,1.28,36.8,57,-100].map(v=>v>=0?'#8c2f3c':'#2f5d82'), borderRadius:4, barThickness:38 }] },
+  options:{ ...base, scales:{ y:{grid:{color:grid},ticks:{color:gray,font:{size:11}}}, x:{grid:{display:false},ticks:{color:txt,font:{size:11}}} } }
+});
+
+new Chart(document.getElementById('s6chart'), {
+  type:'bar',
+  data:{ labels:['댐 공급능력','반도체 요구량','여수산단 부족'], datasets:[{ data:[64.6,65,20], backgroundColor:['#2f5d82','#8c2f3c','#a56a17'], borderRadius:4, barThickness:44 }] },
+  options:{ ...base, scales:{ y:{grid:{color:grid},ticks:{color:gray,font:{size:11}}}, x:{grid:{display:false},ticks:{color:txt,font:{size:12}}} } }
+});
+</script>
+
+</body>
+</html>
